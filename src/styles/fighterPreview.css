@@ -12,7 +12,10 @@
   align-items: flex-start;
 }
 
-.fighter-preview___image {
-  height: 200px;
-  width: 100px;
+.fighter-preview___properties {
+list-style: none;
+font-size: 20px;
+color: #FFFF00;
+
 }
+
