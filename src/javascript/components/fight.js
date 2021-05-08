@@ -11,88 +11,81 @@ const {
 } = controls;
 
 
-const firstFighter = {
-  isBlocked: false,
-};
-const secondFighter = {
-  isBlocked: false,
-};
+function attack(attacker, defender) {
 
+  return attacker.isBlocked ? null : defender.health2(getDamage(attacker, defender))
 
-// document.addEventListener('keydown', onKeyDown);
-// document.addEventListener('keyup', onKeyUp);
+}
 
-// function onKeyDown(evt) {
-//   switch (evt.code) {
-//     case PlayerOneAttack:
-//       console.log(evt.code);
-//       break;
-//     case PlayerTwoAttack:
-//       console.log(evt.code);
-//       break;
-//     case PlayerOneBlock:
-//       firstFighter.isBlocked = true;
-//       console.log(evt.code);
-//       break;
-//     case PlayerTwoBlock:
-//       secondFighter.isBlocked = true;
-//       console.log(evt.code);
-//       break;
-//     case PlayerOneCriticalHitCombination:
-//       console.log(evt.code);
-//       break;
-//     case PlayerTwoCriticalHitCombination:
-//       console.log(evt.code);
-//       break;
+function critAttack(attacker, defender) {
 
-//     default: break;
-//  }
-// };
+  return attacker.isBlocked ? null : defender.health2(2 * attacker.attack)
+}
 
+function firstPlayerCriticalKeyArray(arr, key) {
+  if (arr.length <= 3 && PlayerOneCriticalHitCombination.includes(key)) {
+    arr.push(key)
+  }
+  setTimeout(() => arr.length = 0, 10000)
+  return arr.length
+}
 
-// function onKeyUp(evt) {
-//   switch (evt.code) {
+function secondPlayerCriticalKeyArray(arr, key) {
+  if (arr.length <= 3 && PlayerTwoCriticalHitCombination.includes(key)) {
+    arr.push(key)
+  }
+  setTimeout(() => arr.length = 0, 10000)
+  return arr.length
+}
 
-//     case PlayerOneBlock:
-//       firstFighter.isBlocked = false;
-//       console.log(evt.code, 'keyup');
-//       break;
-//     case PlayerTwoBlock:
-//       secondFighter.isBlocked = false;
-//       console.log(evt.code, 'keyup');
-//       break;
-
-//     default: break;
-//   }
-// }
-
-export async function fight(firstFighter, secondFighter) {
+function createListener(one, second) {
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
 
   function onKeyDown(evt) {
-    switch (evt.code) {
-      case PlayerOneAttack:
-        const damage1 = getDamage(firstFighter, secondFighter)
-        console.log(damage1);
-        break;
-      case PlayerTwoAttack:
-        const damage2 = getDamage(secondFighter, firstFighter)
-        console.log(damage2);
-        break;
-      case PlayerOneBlock:
-        firstFighter.isBlocked = true;
-        break;
-      case PlayerTwoBlock:
-        secondFighter.isBlocked = true;
-        break;
-      case PlayerOneCriticalHitCombination:
-        break;
-      case PlayerTwoCriticalHitCombination:
-        break;
+    if (!evt.repeat) {
+      switch (evt.code) {
+        case PlayerOneAttack:
+          attack(one, second)
 
-      default: break;
+
+          console.log(second.health);
+
+
+          break;
+        case PlayerTwoAttack:
+
+          attack(second, one)
+
+          console.log(one.health);
+          break;
+        case PlayerOneBlock:
+          one.isBlocked = true;
+          break;
+        case PlayerTwoBlock:
+          second.isBlocked = true;
+          break;
+
+        default: break;
+      }
     }
+
+    let crit1 = firstPlayerCriticalKeyArray(one.arrKey, evt.code)
+    if (crit1 === 3) {
+
+      critAttack(one, second)
+
+      console.log(second.health);
+    }
+
+    let crit2 = secondPlayerCriticalKeyArray(second.arrKey, evt.code)
+    if (crit2 === 3) {
+
+      critAttack(second, one)
+
+      console.log(one.health);
+    }
+
   };
 
 
@@ -100,19 +93,50 @@ export async function fight(firstFighter, secondFighter) {
     switch (evt.code) {
 
       case PlayerOneBlock:
-        firstFighter.isBlocked = false;
+        one.isBlocked = false;
         console.log(evt.code, 'keyup');
         break;
       case PlayerTwoBlock:
-        secondFighter.isBlocked = false;
+        second.isBlocked = false;
         console.log(evt.code, 'keyup');
         break;
 
       default: break;
     }
   }
+}
+
+
+
+export async function fight(firstFighter, secondFighter) {
+
+  const firstPlayer = {
+    isBlocked: false,
+    ...firstFighter,
+    arrKey: [],
+
+    health2(value) {
+      return this.health = this.health - value;
+    }
+
+  };
+  const secondPlayer = {
+    isBlocked: false,
+    ...secondFighter,
+    arrKey: [],
+
+    health2(value) {
+      return this.health = this.health - value;
+    }
+
+  };
+
+  createListener(firstPlayer, secondPlayer);
+
+
   return new Promise((resolve) => {
     // resolve the promise with the winner when fight is over
+
   });
 }
 
