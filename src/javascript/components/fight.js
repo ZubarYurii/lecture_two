@@ -43,31 +43,29 @@ function createListener(one, second) {
   document.addEventListener('keyup', onKeyUp);
 
   function onKeyDown(evt) {
-    if (!evt.repeat) {
-      switch (evt.code) {
-        case PlayerOneAttack:
-          attack(one, second)
+    switch (evt.code) {
+      case PlayerOneAttack:
+        attack(one, second)
 
 
-          console.log(second.health);
+        console.log(second.health);
 
 
-          break;
-        case PlayerTwoAttack:
+        break;
+      case PlayerTwoAttack:
 
-          attack(second, one)
+        attack(second, one)
 
-          console.log(one.health);
-          break;
-        case PlayerOneBlock:
-          one.isBlocked = true;
-          break;
-        case PlayerTwoBlock:
-          second.isBlocked = true;
-          break;
+        console.log(one.health);
+        break;
+      case PlayerOneBlock:
+        one.isBlocked = true;
+        break;
+      case PlayerTwoBlock:
+        second.isBlocked = true;
+        break;
 
-        default: break;
-      }
+      default: break;
     }
 
     let crit1 = firstPlayerCriticalKeyArray(one.arrKey, evt.code)
