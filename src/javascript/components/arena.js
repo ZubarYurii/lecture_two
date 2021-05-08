@@ -1,5 +1,7 @@
 import { createElement } from '../helpers/domHelper';
 import { createFighterImage } from './fighterPreview';
+import { fight } from './fight';
+import { showWinnerModal } from './modal/winner';
 
 export function renderArena(selectedFighters) {
   const root = document.getElementById('root');

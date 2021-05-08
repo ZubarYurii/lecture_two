@@ -4,9 +4,8 @@ class FighterService {
   async getFighters() {
     try {
       const endpoint = 'fighters.json';
-      const apiResult = await callApi(endpoint, 'GET');
-
-      return apiResult;
+      
+      return await callApi(endpoint, 'GET');;
     } catch (error) {
       throw error;
     }
@@ -16,8 +15,8 @@ class FighterService {
 
     try {
       const endpoint = `details/fighter/${id}.json`;
-      const apiResult =  await callApi(endpoint, 'GET');
-      return apiResult;
+    
+      return await callApi(endpoint, 'GET');;
  
     } catch (error) {
       throw error;
