@@ -13,13 +13,28 @@ const {
 
 function attack(attacker, defender) {
 
-  return attacker.isBlocked ? null : defender.health2(getDamage(attacker, defender))
+  let damage = attacker.isBlocked ? null : getDamage(attacker, defender);
 
+  let damagePercent = damage * 100 / defender.health
+
+  return defender.changedHealthIndicator(damagePercent)
+
+}
+
+function changeHealthStatus(position, defender) {
+
+  const healthInd = document.querySelector(`#${position}-fighter-indicator`);
+
+  defender.healthIndicator > 0 ? healthInd.style.width = `${defender.healthIndicator}%` : healthInd.style.width = 0;
 }
 
 function critAttack(attacker, defender) {
 
-  return attacker.isBlocked ? null : defender.health2(2 * attacker.attack)
+  let damage = attacker.isBlocked ? null : (getDamage(attacker, defender) * 2);
+
+  let damagePercent = damage * 100 / defender.health
+
+  return defender.changedHealthIndicator(damagePercent)
 }
 
 function firstPlayerCriticalKeyArray(arr, key) {
@@ -38,50 +53,47 @@ function secondPlayerCriticalKeyArray(arr, key) {
   return arr.length
 }
 
-function createListener(one, second) {
+function createListener(firstPlayer, secondPlayer) {
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
 
   function onKeyDown(evt) {
     switch (evt.code) {
       case PlayerOneAttack:
-        attack(one, second)
 
-
-        console.log(second.health);
-
-
+        attack(firstPlayer, secondPlayer)
+        changeHealthStatus('right', secondPlayer)
         break;
+
       case PlayerTwoAttack:
 
-        attack(second, one)
+        attack(secondPlayer, firstPlayer)
+        changeHealthStatus('left', firstPlayer)
+        break;
 
-        console.log(one.health);
-        break;
       case PlayerOneBlock:
-        one.isBlocked = true;
+        firstPlayer.isBlocked = true;
         break;
+
       case PlayerTwoBlock:
-        second.isBlocked = true;
+        secondPlayer.isBlocked = true;
         break;
 
       default: break;
     }
 
-    let crit1 = firstPlayerCriticalKeyArray(one.arrKey, evt.code)
+    let crit1 = firstPlayerCriticalKeyArray(firstPlayer.arrKey, evt.code)
     if (crit1 === 3) {
 
-      critAttack(one, second)
-
-      console.log(second.health);
+      critAttack(firstPlayer, secondPlayer)
+      changeHealthStatus('right', secondPlayer)
     }
 
-    let crit2 = secondPlayerCriticalKeyArray(second.arrKey, evt.code)
+    let crit2 = secondPlayerCriticalKeyArray(secondPlayer.arrKey, evt.code)
     if (crit2 === 3) {
 
-      critAttack(second, one)
-
-      console.log(one.health);
+      critAttack(secondPlayer, firstPlayer)
+      changeHealthStatus('left', firstPlayer)
     }
 
   };
@@ -91,18 +103,26 @@ function createListener(one, second) {
     switch (evt.code) {
 
       case PlayerOneBlock:
-        one.isBlocked = false;
-        console.log(evt.code, 'keyup');
+        firstPlayer.isBlocked = false;
         break;
       case PlayerTwoBlock:
-        second.isBlocked = false;
-        console.log(evt.code, 'keyup');
+        secondPlayer.isBlocked = false;
         break;
 
       default: break;
     }
   }
 }
+
+// function winner(one, second) {
+//   if (one.health <= 0) {
+//     return second;
+//   }
+
+//   if (second.health <= 0) {
+//     return one;
+//   }
+// }
 
 
 
@@ -112,9 +132,10 @@ export async function fight(firstFighter, secondFighter) {
     isBlocked: false,
     ...firstFighter,
     arrKey: [],
+    healthIndicator: 100,
 
-    health2(value) {
-      return this.health = this.health - value;
+    changedHealthIndicator(value) {
+      return this.healthIndicator = this.healthIndicator - value;
     }
 
   };
@@ -122,9 +143,10 @@ export async function fight(firstFighter, secondFighter) {
     isBlocked: false,
     ...secondFighter,
     arrKey: [],
+    healthIndicator: 100,
 
-    health2(value) {
-      return this.health = this.health - value;
+    changedHealthIndicator(value) {
+      return this.healthIndicator = this.healthIndicator - value;
     }
 
   };
@@ -134,6 +156,8 @@ export async function fight(firstFighter, secondFighter) {
 
   return new Promise((resolve) => {
     // resolve the promise with the winner when fight is over
+
+    // resolve(createStatus(firstPlayer, secondPlayer))
 
   });
 }
